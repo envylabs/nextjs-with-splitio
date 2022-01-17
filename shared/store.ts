@@ -8,12 +8,12 @@ import { Action } from "redux";
 import { createWrapper, HYDRATE } from "next-redux-wrapper";
 
 export enum Feature {
-  Color = "COLOR",
+  Color = "MY_FLAG",
 }
 
-interface Features {
+export type Features = {
   [Feature.Color]?: "blue" | "red";
-}
+};
 
 export const featureFlagsSlice = createSlice({
   extraReducers: {
