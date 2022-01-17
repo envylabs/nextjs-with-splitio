@@ -1,16 +1,19 @@
 import type { GetServerSideProps, NextPage } from "next";
+import { connect } from "react-redux";
+import { AppState, wrapper } from "../shared/store";
 import styles from "../styles/Home.module.css";
 
-const SSR: NextPage = () => {
-  const treatment = "blue";
+const SSR: NextPage<AppState> = ({ featureFlags }) => {
+  const treatment = featureFlags.color;
 
   return <h1 className={styles.title}>{treatment}</h1>;
 };
 
-export const getServerSideProps: GetServerSideProps = async () => {
-  return {
-    props: {},
-  };
-};
+export const getServerSideProps: GetServerSideProps =
+  wrapper.getServerSideProps((store) => async () => {
+    return {
+      props: {},
+    };
+  });
 
-export default SSR;
+export default connect((state: AppState) => state)(SSR);

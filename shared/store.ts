@@ -1,25 +1,48 @@
-import { createStore, AnyAction, Store } from "redux";
-import { createWrapper, Context, HYDRATE } from "next-redux-wrapper";
+import { configureStore, createSlice, ThunkAction } from "@reduxjs/toolkit";
+import { Action } from "redux";
+import { createWrapper, HYDRATE } from "next-redux-wrapper";
 
-export interface State {
-  tick: string;
+interface Features {
+  color?: "blue" | "red";
 }
 
-// create your reducer
-const reducer = (state: State = { tick: "init" }, action: AnyAction) => {
-  switch (action.type) {
-    case HYDRATE:
-      // Attention! This will overwrite client state! Real apps should use proper reconciliation.
-      return { ...state, ...action.payload };
-    case "TICK":
-      return { ...state, tick: action.payload };
-    default:
-      return state;
-  }
-};
+export const featureFlagsSlice = createSlice({
+  extraReducers: {
+    [HYDRATE]: (state, action) => {
+      console.log("HYDRATE", state, action.payload);
+      return {
+        ...state,
+        ...action.payload.subject,
+      };
+    },
+  },
+  initialState: { color: "blue" } as Features,
+  name: "featureFlags",
+  reducers: {
+    setColor(state, action) {
+      return {
+        ...action.payload,
+        ...state,
+      };
+    },
+  },
+});
 
-// create a makeStore function
-const makeStore = (context: Context) => createStore(reducer);
+const makeStore = () =>
+  configureStore({
+    reducer: {
+      [featureFlagsSlice.name]: featureFlagsSlice.reducer,
+    },
+    devTools: true,
+  });
 
-// export an assembled wrapper
-export const wrapper = createWrapper<Store<State>>(makeStore, { debug: true });
+export type AppStore = ReturnType<typeof makeStore>;
+export type AppState = ReturnType<AppStore["getState"]>;
+export type AppThunk<ReturnType = void> = ThunkAction<
+  ReturnType,
+  AppState,
+  unknown,
+  Action
+>;
+
+export const wrapper = createWrapper<AppStore>(makeStore);
