@@ -1,5 +1,6 @@
 import type { GetServerSideProps, NextPage } from "next";
 import { connect } from "react-redux";
+import { addSplitIOServerClient, TrafficType } from "../shared/split";
 import { AppState, Feature, wrapper } from "../shared/store";
 import styles from "../styles/Home.module.css";
 
@@ -11,6 +12,11 @@ const SSR: NextPage<AppState> = ({ featureFlags }) => {
 
 export const getServerSideProps: GetServerSideProps =
   wrapper.getServerSideProps((store) => async () => {
+    await addSplitIOServerClient(
+      { trafficType: TrafficType.User },
+      store.dispatch
+    );
+
     return {
       props: {},
     };

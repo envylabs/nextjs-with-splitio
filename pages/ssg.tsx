@@ -1,5 +1,9 @@
 import type { GetStaticProps, NextPage } from "next";
 import { connect } from "react-redux";
+import {
+  synchronizeSplitIOServerClientToRedux,
+  TrafficType,
+} from "../shared/split";
 import { AppState, Feature, wrapper } from "../shared/store";
 import styles from "../styles/Home.module.css";
 
@@ -11,6 +15,11 @@ const SSG: NextPage<AppState> = ({ featureFlags }) => {
 
 export const getStaticProps: GetStaticProps = wrapper.getStaticProps(
   (store) => async () => {
+    await synchronizeSplitIOServerClientToRedux(
+      { trafficType: TrafficType.User },
+      store.dispatch
+    );
+
     return {
       props: {},
     };
