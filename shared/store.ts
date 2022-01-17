@@ -2,8 +2,12 @@ import { configureStore, createSlice, ThunkAction } from "@reduxjs/toolkit";
 import { Action } from "redux";
 import { createWrapper, HYDRATE } from "next-redux-wrapper";
 
+export enum Feature {
+  Color = "COLOR",
+}
+
 interface Features {
-  color?: "blue" | "red";
+  [Feature.Color]?: "blue" | "red";
 }
 
 export const featureFlagsSlice = createSlice({
@@ -16,13 +20,13 @@ export const featureFlagsSlice = createSlice({
       };
     },
   },
-  initialState: { color: "blue" } as Features,
+  initialState: { COLOR: "blue" } as Features,
   name: "featureFlags",
   reducers: {
-    setColor(state, action) {
+    setFeatureFlag(state, action) {
       return {
-        ...action.payload,
         ...state,
+        [action.payload.name]: action.payload.value,
       };
     },
   },

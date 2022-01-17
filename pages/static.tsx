@@ -1,10 +1,10 @@
 import type { NextPage } from "next";
 import { connect } from "react-redux";
-import { AppState } from "../shared/store";
+import { AppState, Feature } from "../shared/store";
 import styles from "../styles/Home.module.css";
 
 const Static: NextPage<AppState> = ({ featureFlags }) => {
-  const treatment = featureFlags.color;
+  const treatment = featureFlags[Feature.Color];
 
   return <h1 className={styles.title}>{treatment}</h1>;
 };
