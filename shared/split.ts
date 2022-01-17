@@ -1,13 +1,13 @@
-import { Action, Dispatch } from "@reduxjs/toolkit";
+import { Dispatch } from "@reduxjs/toolkit";
 import { SplitFactory } from "@splitsoftware/splitio";
 import SplitIO from "@splitsoftware/splitio/types/splitio";
-import { Features, Feature, featureFlagsSlice, wrapper } from "./store";
+import { Features, Feature, featureFlagsSlice } from "./store";
 
 export enum TrafficType {
   User = "user",
 }
 
-interface IServerClientConfig {
+export interface IServerClientConfig {
   trafficType: TrafficType;
 }
 
@@ -27,7 +27,7 @@ function isIBrowserClientConfig(config: any): config is IBrowserClientConfig {
   return typeof config.key === "string";
 }
 
-function isLocalhost() {
+export function isLocalhost() {
   return authorizationKey === LOCALHOST;
 }
 
@@ -57,7 +57,7 @@ function storeClient({
   clients[clientKey(config)] = client;
 }
 
-function createClient(config: IClientConfig): SplitIOClient {
+export function createClient(config: IClientConfig): SplitIOClient {
   const core = isIBrowserClientConfig(config)
     ? ({
         authorizationKey,
@@ -74,9 +74,9 @@ function createClient(config: IClientConfig): SplitIOClient {
   return client;
 }
 
-type GetTreatment = <F extends Feature>(name: F) => Features[F];
+export type GetTreatment = <F extends Feature>(name: F) => Features[F];
 
-function synchronizeSplitIOAndRedux({
+export function synchronizeSplitIOAndRedux({
   config,
   dispatch,
   getTreatment,
@@ -142,25 +142,4 @@ export async function addSplitIOServerClient(
   handleUpdate();
 
   storeClient({ client, config });
-}
-
-export async function synchronizeSplitIOServerClientToRedux(
-  config: IServerClientConfig,
-  dispatch: Dispatch
-): Promise<void> {
-  const client = createClient(config);
-  const getTreatment: GetTreatment = (name) => {
-    return client.getTreatment(config.trafficType, name) as any;
-  };
-  const handleUpdate = () => {
-    synchronizeSplitIOAndRedux({ config, dispatch, getTreatment });
-  };
-
-  if (!isLocalhost()) {
-    await client.ready();
-  }
-
-  handleUpdate();
-
-  await client.destroy();
 }
