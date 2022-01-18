@@ -12,10 +12,7 @@ const SSR: NextPage<AppState> = ({ featureFlags }) => {
 
 export const getServerSideProps: GetServerSideProps =
   wrapper.getServerSideProps((store) => async () => {
-    await addSplitIOServerClient(
-      { trafficType: TrafficType.User },
-      store.dispatch
-    );
+    await addSplitIOServerClient({}, store.dispatch);
 
     return {
       props: {},

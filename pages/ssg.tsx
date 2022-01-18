@@ -13,10 +13,7 @@ const SSG: NextPage<AppState> = ({ featureFlags }) => {
 
 export const getStaticProps: GetStaticProps = wrapper.getStaticProps(
   (store) => async () => {
-    await synchronizeSplitIOServerClientToRedux(
-      { trafficType: TrafficType.User },
-      store.dispatch
-    );
+    await synchronizeSplitIOServerClientToRedux({}, store.dispatch);
 
     return {
       props: {},

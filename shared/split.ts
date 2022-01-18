@@ -8,11 +8,12 @@ export enum TrafficType {
 }
 
 export interface IServerClientConfig {
-  trafficType: TrafficType;
+  key?: string;
 }
 
-interface IBrowserClientConfig extends IServerClientConfig {
+interface IBrowserClientConfig {
   key: string;
+  trafficType: TrafficType;
 }
 
 type IClientConfig = IServerClientConfig | IBrowserClientConfig;
@@ -21,10 +22,20 @@ type SplitIOClient = SplitIO.IClient | SplitIO.IBrowserClient;
 
 const clients: Record<string, SplitIOClient> = {};
 const LOCALHOST = "localhost";
+export const SERVER_KEY = "server";
 const authorizationKey = process.env.NEXT_PUBLIC_SPLIT_IO_API_KEY || LOCALHOST;
 
-function isIBrowserClientConfig(config: any): config is IBrowserClientConfig {
-  return typeof config.key === "string";
+function isIBrowserClientConfig(
+  config: IClientConfig
+): config is IBrowserClientConfig {
+  return typeof (config as any).trafficType === "string";
+}
+
+function isTrafficTypeUpdated(
+  config: IClientConfig,
+  trafficType: TrafficType
+): boolean {
+  return !isIBrowserClientConfig(config) || config.trafficType === trafficType;
 }
 
 export function isLocalhost() {
@@ -36,7 +47,7 @@ function clientKey(config: IClientConfig): string {
     return `${config.trafficType}/${config.key}`;
   }
 
-  return config.trafficType;
+  return config.key || SERVER_KEY;
 }
 
 function getClient(config: IClientConfig): SplitIOClient | undefined {
@@ -85,7 +96,7 @@ export function synchronizeSplitIOAndRedux({
   dispatch: Dispatch;
   getTreatment: GetTreatment;
 }): void {
-  if (config.trafficType === TrafficType.User) {
+  if (isTrafficTypeUpdated(config, TrafficType.User)) {
     dispatch(
       featureFlagsSlice.actions.setFeatureFlag({
         name: Feature.Color,
@@ -123,7 +134,7 @@ export async function addSplitIOServerClient(
 ): Promise<void> {
   const client = getClient(config) || createClient(config);
   const getTreatment: GetTreatment = (name) => {
-    return client.getTreatment(config.trafficType, name) as any;
+    return client.getTreatment(config.key || SERVER_KEY, name) as any;
   };
   const handleUpdate = () => {
     synchronizeSplitIOAndRedux({ config, dispatch, getTreatment });

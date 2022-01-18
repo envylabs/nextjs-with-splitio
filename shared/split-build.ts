@@ -7,6 +7,7 @@ import {
   GetTreatment,
   IServerClientConfig,
   isLocalhost,
+  SERVER_KEY,
   synchronizeSplitIOAndRedux,
 } from "./split";
 
@@ -47,24 +48,21 @@ export async function synchronizeSplitIOServerClientToRedux(
 
   const client = createClient(config);
   const getTreatment: GetTreatment = (name) => {
-    return client.getTreatment(config.trafficType, name) as any;
-  };
-  const handleUpdate = () => {
-    synchronizeSplitIOAndRedux({
-      config,
-      dispatch: <A extends AnyAction>(action: A): A => {
-        setFeatureFlagActions.push(action);
-        return action;
-      },
-      getTreatment,
-    });
+    return client.getTreatment(config.key || SERVER_KEY, name) as any;
   };
 
   if (!isLocalhost()) {
     await client.ready();
   }
 
-  handleUpdate();
+  synchronizeSplitIOAndRedux({
+    config,
+    dispatch: <A extends AnyAction>(action: A): A => {
+      setFeatureFlagActions.push(action);
+      return action;
+    },
+    getTreatment,
+  });
 
   storeSetFeatureFlagActionCache(setFeatureFlagActions);
 
