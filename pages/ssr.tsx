@@ -1,7 +1,7 @@
-import type { GetServerSideProps, NextPage } from "next";
+import type { NextPage } from "next";
 import { connect } from "react-redux";
-import { addSplitIOServerClient, TrafficType } from "../shared/split";
-import { AppState, Feature, wrapper } from "../shared/store";
+import { AppState, Feature } from "../shared/store";
+import { withDefaultServerSideProps } from "../shared/with-default-server-side-props";
 import styles from "../styles/Home.module.css";
 
 const SSR: NextPage<AppState> = ({ featureFlags }) => {
@@ -15,13 +15,6 @@ const SSR: NextPage<AppState> = ({ featureFlags }) => {
   );
 };
 
-export const getServerSideProps: GetServerSideProps =
-  wrapper.getServerSideProps((store) => async () => {
-    await addSplitIOServerClient({}, store.dispatch);
-
-    return {
-      props: {},
-    };
-  });
+export const getServerSideProps = withDefaultServerSideProps();
 
 export default connect((state: AppState) => state)(SSR);

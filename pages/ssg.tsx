@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import { TrafficType } from "../shared/split";
 import { synchronizeSplitIOServerClientToRedux } from "../shared/split-build";
 import { AppState, Feature, wrapper } from "../shared/store";
+import { withDefaultStaticProps } from "../shared/with-default-static-props";
 import styles from "../styles/Home.module.css";
 
 const SSG: NextPage<AppState> = ({ featureFlags }) => {
@@ -16,14 +17,6 @@ const SSG: NextPage<AppState> = ({ featureFlags }) => {
   );
 };
 
-export const getStaticProps: GetStaticProps = wrapper.getStaticProps(
-  (store) => async () => {
-    await synchronizeSplitIOServerClientToRedux({}, store.dispatch);
-
-    return {
-      props: {},
-    };
-  }
-);
+export const getStaticProps: GetStaticProps = withDefaultStaticProps();
 
 export default connect((state: AppState) => state)(SSG);
