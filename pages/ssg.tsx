@@ -6,9 +6,14 @@ import { AppState, Feature, wrapper } from "../shared/store";
 import styles from "../styles/Home.module.css";
 
 const SSG: NextPage<AppState> = ({ featureFlags }) => {
-  const treatment = featureFlags[Feature.Color];
+  const color = featureFlags[Feature.Color];
+  const other = featureFlags[Feature.Other];
 
-  return <h1 className={styles.title}>{treatment}</h1>;
+  return (
+    <h1 className={styles.title}>
+      {color} {other}
+    </h1>
+  );
 };
 
 export const getStaticProps: GetStaticProps = wrapper.getStaticProps(

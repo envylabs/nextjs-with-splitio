@@ -9,10 +9,12 @@ import { createWrapper, HYDRATE } from "next-redux-wrapper";
 
 export enum Feature {
   Color = "MY_FLAG",
+  Other = "MY_DIFFERENT_FLAG",
 }
 
 export type Features = {
   [Feature.Color]?: "blue" | "red";
+  [Feature.Other]?: "off" | "on";
 };
 
 export const featureFlagsSlice = createSlice({

@@ -4,6 +4,7 @@ import SplitIO from "@splitsoftware/splitio/types/splitio";
 import { Features, Feature, featureFlagsSlice } from "./store";
 
 export enum TrafficType {
+  Anonymous = "anonymous",
   User = "user",
 }
 
@@ -101,6 +102,14 @@ export function synchronizeSplitIOAndRedux({
       featureFlagsSlice.actions.setFeatureFlag({
         name: Feature.Color,
         value: getTreatment(Feature.Color),
+      })
+    );
+  }
+  if (isTrafficTypeUpdated(config, TrafficType.Anonymous)) {
+    dispatch(
+      featureFlagsSlice.actions.setFeatureFlag({
+        name: Feature.Other,
+        value: getTreatment(Feature.Other),
       })
     );
   }

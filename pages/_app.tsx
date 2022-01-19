@@ -17,6 +17,10 @@ function MyApp({ Component, pageProps }: AppProps) {
       { key: splitId, trafficType: TrafficType.User },
       dispatch
     );
+    addSplitIOBrowserClient(
+      { key: splitId, trafficType: TrafficType.Anonymous },
+      dispatch
+    );
   }
 
   return (
