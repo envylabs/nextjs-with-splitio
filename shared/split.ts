@@ -145,27 +145,44 @@ export function addSplitIOBrowserClient(
   client.on(client.Event.SDK_UPDATE, handleUpdate);
 }
 
+function handleUpdate({
+  client,
+  config,
+  dispatch,
+}: {
+  client: SplitIO.IClient;
+  config: IServerClientConfig;
+  dispatch: Dispatch;
+}): () => void {
+  return () => {
+    synchronizeSplitIOAndRedux({
+      config,
+      dispatch,
+      getTreatment: (name) => {
+        return client.getTreatment(config.key || SERVER_KEY, name) as any;
+      },
+    });
+  };
+}
+
 export async function addSplitIOServerClient(
   config: IServerClientConfig,
   dispatch: Dispatch
 ): Promise<void> {
-  if (getClient(config)) {
-    return;
+  let client = getClient(config);
+
+  if (!client) {
+    client = createClient(config);
+    storeClient({ client, config });
+    client.on(
+      client.Event.SDK_READY,
+      handleUpdate({ client, config, dispatch })
+    );
+    client.on(
+      client.Event.SDK_UPDATE,
+      handleUpdate({ client, config, dispatch })
+    );
   }
-
-  const client = createClient(config);
-
-  storeClient({ client, config });
-
-  const getTreatment: GetTreatment = (name) => {
-    return client.getTreatment(config.key || SERVER_KEY, name) as any;
-  };
-  const handleUpdate = () => {
-    synchronizeSplitIOAndRedux({ config, dispatch, getTreatment });
-  };
-
-  client.on(client.Event.SDK_READY, handleUpdate);
-  client.on(client.Event.SDK_UPDATE, handleUpdate);
 
   if (!isLocalhost()) {
     await client.ready();
@@ -174,5 +191,5 @@ export async function addSplitIOServerClient(
   // Purposely run after both localhost mode or server client creation. Also run
   // so that subsequent queries on the server-side will reuse the client, but
   // needs to reset the state.
-  handleUpdate();
+  handleUpdate({ client, config, dispatch })();
 }
