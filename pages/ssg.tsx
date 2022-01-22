@@ -12,9 +12,12 @@ const SSG: NextPage<AppState> = ({ featureFlags }) => {
   const now = new Date().toISOString();
 
   return (
-    <h1 className={styles.title}>
-      {color} {other} {now}
-    </h1>
+    <>
+      <h1 className={styles.title}>
+        {color} {other}
+      </h1>
+      <p>{now}</p>
+    </>
   );
 };
 
