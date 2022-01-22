@@ -24,7 +24,7 @@ type SplitIOClient = SplitIO.IClient | SplitIO.IBrowserClient;
 const clients: Record<string, SplitIOClient> = {};
 const LOCALHOST = "localhost";
 export const SERVER_KEY = "server";
-const authorizationKey = process.env.NEXT_PUBLIC_SPLIT_IO_API_KEY || LOCALHOST;
+const AUTHORIZATION_KEY = process.env.NEXT_PUBLIC_SPLIT_IO_API_KEY || LOCALHOST;
 
 function isIBrowserClientConfig(
   config: IClientConfig
@@ -40,7 +40,7 @@ function isTrafficTypeUpdated(
 }
 
 export function isLocalhost() {
-  return authorizationKey === LOCALHOST;
+  return AUTHORIZATION_KEY === LOCALHOST;
 }
 
 function clientKey(config: IClientConfig): string {
@@ -72,11 +72,13 @@ function storeClient({
 export function createClient(config: IClientConfig): SplitIOClient {
   const core = isIBrowserClientConfig(config)
     ? ({
-        authorizationKey,
+        authorizationKey: AUTHORIZATION_KEY,
         key: config.key,
         trafficType: config.trafficType,
       } as SplitIO.IBrowserSettings["core"])
-    : ({ authorizationKey } as SplitIO.INodeSettings["core"]);
+    : ({
+        authorizationKey: AUTHORIZATION_KEY,
+      } as SplitIO.INodeSettings["core"]);
 
   const factory = SplitFactory({ core, debug: false });
   const client = factory.client();
@@ -141,7 +143,11 @@ export async function addSplitIOServerClient(
   config: IServerClientConfig,
   dispatch: Dispatch
 ): Promise<void> {
-  const client = getClient(config) || createClient(config);
+  if (getClient(config)) {
+    return;
+  }
+
+  const client = createClient(config);
   const getTreatment: GetTreatment = (name) => {
     return client.getTreatment(config.key || SERVER_KEY, name) as any;
   };
