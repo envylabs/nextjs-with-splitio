@@ -51,6 +51,10 @@ function clientKey(config: IClientConfig): string {
   return config.key || SERVER_KEY;
 }
 
+function getClient(
+  config: IBrowserClientConfig
+): SplitIO.IBrowserClient | undefined;
+function getClient(config: IServerClientConfig): SplitIO.IClient | undefined;
 function getClient(config: IClientConfig): SplitIOClient | undefined {
   return clients[clientKey(config)];
 }
@@ -59,7 +63,7 @@ function storeClient({
   client,
   config,
 }: {
-  client: SplitIO.IClient;
+  client: SplitIOClient;
   config: IClientConfig;
 }): void {
   if (getClient(config)) {
@@ -69,6 +73,10 @@ function storeClient({
   clients[clientKey(config)] = client;
 }
 
+export function createClient(
+  config: IBrowserClientConfig
+): SplitIO.IBrowserClient;
+export function createClient(config: IServerClientConfig): SplitIO.IClient;
 export function createClient(config: IClientConfig): SplitIOClient {
   const core = isIBrowserClientConfig(config)
     ? ({
