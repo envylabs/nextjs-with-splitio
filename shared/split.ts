@@ -131,6 +131,9 @@ export function addSplitIOBrowserClient(
   }
 
   const client = createClient(config);
+
+  storeClient({ client, config });
+
   const getTreatment: GetTreatment = (name) => {
     return client.getTreatment(name) as any;
   };
@@ -140,8 +143,6 @@ export function addSplitIOBrowserClient(
 
   client.on(client.Event.SDK_READY, handleUpdate);
   client.on(client.Event.SDK_UPDATE, handleUpdate);
-
-  storeClient({ client, config });
 }
 
 export async function addSplitIOServerClient(
@@ -153,6 +154,9 @@ export async function addSplitIOServerClient(
   }
 
   const client = createClient(config);
+
+  storeClient({ client, config });
+
   const getTreatment: GetTreatment = (name) => {
     return client.getTreatment(config.key || SERVER_KEY, name) as any;
   };
@@ -171,6 +175,4 @@ export async function addSplitIOServerClient(
   // so that subsequent queries on the server-side will reuse the client, but
   // needs to reset the state.
   handleUpdate();
-
-  storeClient({ client, config });
 }
