@@ -1,4 +1,4 @@
-import type { NextPage } from "next";
+import type { GetServerSideProps, NextPage } from "next";
 import { connect } from "react-redux";
 import { AppState, Feature } from "../shared/store";
 import { withDefaultServerSideProps } from "../shared/with-default-server-side-props";
@@ -19,6 +19,7 @@ const SSR: NextPage<AppState> = ({ featureFlags }) => {
   );
 };
 
-export const getServerSideProps = withDefaultServerSideProps();
+export const getServerSideProps: GetServerSideProps =
+  withDefaultServerSideProps();
 
 export default connect((state: AppState) => state)(SSR);

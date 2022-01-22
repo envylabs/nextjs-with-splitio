@@ -1,8 +1,6 @@
 import type { GetStaticProps, NextPage } from "next";
 import { connect } from "react-redux";
-import { TrafficType } from "../shared/split";
-import { synchronizeSplitIOServerClientToRedux } from "../shared/split-build";
-import { AppState, Feature, wrapper } from "../shared/store";
+import { AppState, Feature } from "../shared/store";
 import { withDefaultStaticProps } from "../shared/with-default-static-props";
 import styles from "../styles/Home.module.css";
 
