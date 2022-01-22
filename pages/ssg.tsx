@@ -9,10 +9,11 @@ import styles from "../styles/Home.module.css";
 const SSG: NextPage<AppState> = ({ featureFlags }) => {
   const color = featureFlags[Feature.Color];
   const other = featureFlags[Feature.Other];
+  const now = new Date().toISOString();
 
   return (
     <h1 className={styles.title}>
-      {color} {other}
+      {color} {other} {now}
     </h1>
   );
 };
