@@ -89,11 +89,8 @@ export function createClient(config: IClientConfig): SplitIOClient {
       } as SplitIO.INodeSettings["core"]);
 
   const factory = SplitFactory({ core, debug: false });
-  const client = factory.client();
 
-  clients[clientKey(config)] = client;
-
-  return client;
+  return factory.client();
 }
 
 export type GetTreatment = <F extends Feature>(name: F) => Features[F];
